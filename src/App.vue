@@ -10,6 +10,7 @@
     <div id="wrapper" v-else>
       <score-board :game="game" @markScore="e => markScore(e)" />
       <div class="dicewrapper">
+        {{ connected }} {{ connected }} {{ gameStarted }} {{ myTurn }} {{ rollsLeft }}
           <dice :dice="game.dice" :canHold="rollsLeft < 3 && rollsLeft > 0" @diceholdchanged="notifyDiceHoldChanged" />
           <button class="rollbutton" :disabled="!connected || !gameStarted || !myTurn || rollsLeft === 0" @click="roll">Roll({{rollsLeft}})</button>
       </div>
@@ -157,10 +158,13 @@ export default {
             this.gameStarted = true;
             this.game.players.forEach((p) => {
               p.isHisTurn = false;
+              p.itsHisTurn = false;
             });
             player = this.game.players.find((p) => p.userName == ev.player);
             if (player) {
+              console.log('found me!', player.userName);
               player.isHisTurn = true;
+              player.itsHisTurn = true;
               player.rollsLeft = 3;
             } 
             break;
@@ -289,6 +293,8 @@ export default {
     },
     myTurn() {
       let me = this.game.players.find((p) => p.userName == this.game.userName);
+      if (me)
+        console.log('myTurn', JSON.stringify(me));
       if (me && me.isHisTurn) return true;
       return false;
     },
